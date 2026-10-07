@@ -1,0 +1,38 @@
+<form class="card" [formGroup]="form" (ngSubmit)="submit()" novalidate>
+  <h2>New entry</h2>
+
+  <div class="field">
+    <label for="applicationId">Application *</label>
+    <select id="applicationId" formControlName="applicationId" [class.invalid]="hasError('applicationId')">
+      <option [ngValue]="null" disabled>Select an application</option>
+      @for (application of applications(); track application.id) {
+        <option [ngValue]="application.id">{{ application.name }}</option>
+      }
+    </select>
+    @if (hasError('applicationId')) {
+      <small class="error">Please select an application.</small>
+    }
+  </div>
+
+  <div class="field">
+    <label for="title">Title *</label>
+    <input id="title" type="text" formControlName="title" maxlength="200" [class.invalid]="hasError('title')" />
+    @if (hasError('title')) {
+      <small class="error">Title is required (max. 200 characters).</small>
+    }
+  </div>
+
+  <div class="field">
+    <label for="version">Version</label>
+    <input id="version" type="text" formControlName="version" maxlength="50" placeholder="e.g. 1.4.0" />
+  </div>
+
+  <div class="field">
+    <label for="description">Description</label>
+    <textarea id="description" formControlName="description" rows="4" maxlength="5000"></textarea>
+  </div>
+
+  <button type="submit" [disabled]="submitting()">
+    {{ submitting() ? 'Saving…' : 'Create entry' }}
+  </button>
+</form>

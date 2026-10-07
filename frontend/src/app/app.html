@@ -1,0 +1,21 @@
+<header>
+  <h1>Release Notes Board</h1>
+</header>
+
+<main>
+  @if (errorMessage(); as message) {
+    <div class="alert" role="alert">
+      <span>{{ message }}</span>
+      <button type="button" class="link" (click)="dismissError()">Dismiss</button>
+    </div>
+  }
+
+  @if (loading()) {
+    <p class="loading">Loading…</p>
+  } @else {
+    <div class="layout">
+      <app-item-form [applications]="applications()" [submitting]="creating()" (created)="createItem($event)" />
+      <app-item-list [items]="items()" [updatingIds]="updatingIds()" (statusChange)="changeStatus($event)" />
+    </div>
+  }
+</main>
