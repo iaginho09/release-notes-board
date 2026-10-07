@@ -1,49 +1,54 @@
-<section class="card">
-  <h2>Entries <span class="count">({{ items().length }})</span></h2>
+<div class="card shadow-sm">
+  <div class="card-body">
+    <h2 class="h5 card-title mb-3">
+      Entries <span class="badge rounded-pill text-bg-secondary">{{ items().length }}</span>
+    </h2>
 
-  @if (items().length === 0) {
-    <p class="empty">No entries yet. Create the first one with the form.</p>
-  } @else {
-    <div class="table-wrapper">
-      <table>
-        <thead>
-          <tr>
-            <th scope="col">Application</th>
-            <th scope="col">Entry</th>
-            <th scope="col">Version</th>
-            <th scope="col">Status</th>
-            <th scope="col">Last updated</th>
-          </tr>
-        </thead>
-        <tbody>
-          @for (item of items(); track item.id) {
+    @if (items().length === 0) {
+      <p class="text-body-secondary mb-0">No entries yet. Create the first one with the form.</p>
+    } @else {
+      <div class="table-responsive">
+        <table class="table table-hover align-middle mb-0">
+          <thead>
             <tr>
-              <td>{{ item.applicationName }}</td>
-              <td>
-                <div class="title">{{ item.title }}</div>
-                @if (item.description) {
-                  <div class="description">{{ item.description }}</div>
-                }
-              </td>
-              <td>{{ item.version ?? '—' }}</td>
-              <td>
-                <select
-                  class="status status-{{ item.status.toLowerCase() }}"
-                  [attr.aria-label]="'Status of ' + item.title"
-                  [value]="item.status"
-                  [disabled]="updatingIds().has(item.id)"
-                  (change)="onStatusSelected(item, $event)"
-                >
-                  @for (status of statuses; track status) {
-                    <option [value]="status" [selected]="status === item.status">{{ statusLabels[status] }}</option>
-                  }
-                </select>
-              </td>
-              <td class="date">{{ item.updatedAt | date: 'medium' }}</td>
+              <th scope="col">Application</th>
+              <th scope="col">Entry</th>
+              <th scope="col">Version</th>
+              <th scope="col">Status</th>
+              <th scope="col">Last updated</th>
             </tr>
-          }
-        </tbody>
-      </table>
-    </div>
-  }
-</section>
+          </thead>
+          <tbody>
+            @for (item of items(); track item.id) {
+              <tr>
+                <td>{{ item.applicationName }}</td>
+                <td>
+                  <div class="fw-semibold">{{ item.title }}</div>
+                  @if (item.description) {
+                    <div class="small text-body-secondary text-pre-line">{{ item.description }}</div>
+                  }
+                </td>
+                <td>{{ item.version ?? '—' }}</td>
+                <td>
+                  <mat-form-field class="status-field" appearance="outline" subscriptSizing="dynamic">
+                    <mat-select
+                      [aria-label]="'Status of ' + item.title"
+                      [value]="item.status"
+                      [disabled]="updatingIds().has(item.id)"
+                      (selectionChange)="onStatusSelected(item, $event)"
+                    >
+                      @for (status of statuses; track status) {
+                        <mat-option [value]="status">{{ statusLabels[status] }}</mat-option>
+                      }
+                    </mat-select>
+                  </mat-form-field>
+                </td>
+                <td class="small text-body-secondary text-nowrap">{{ item.updatedAt | date: 'medium' }}</td>
+              </tr>
+            }
+          </tbody>
+        </table>
+      </div>
+    }
+  </div>
+</div>

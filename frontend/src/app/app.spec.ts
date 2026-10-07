@@ -39,9 +39,9 @@ describe('App', () => {
     await fixture.whenStable();
 
     const compiled = fixture.nativeElement as HTMLElement;
-    expect(compiled.querySelector('h1')?.textContent).toContain('Release Notes Board');
+    expect(compiled.querySelector('.navbar-brand')?.textContent).toContain('Release Notes Board');
     expect(compiled.querySelector('tbody')?.textContent).toContain('New login page');
-    expect(compiled.querySelector('#applicationId')?.textContent).toContain('Customer Portal');
+    expect(compiled.querySelector('tbody')?.textContent).toContain('Customer Portal');
   });
 
   it('should show an error when the backend is unreachable', async () => {

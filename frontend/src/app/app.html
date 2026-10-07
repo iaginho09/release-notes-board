@@ -1,21 +1,27 @@
-<header>
-  <h1>Release Notes Board</h1>
-</header>
+<nav class="navbar bg-primary mb-4" data-bs-theme="dark">
+  <div class="container">
+    <span class="navbar-brand mb-0 h1">Release Notes Board</span>
+  </div>
+</nav>
 
-<main>
+<main class="container pb-4">
   @if (errorMessage(); as message) {
-    <div class="alert" role="alert">
-      <span>{{ message }}</span>
-      <button type="button" class="link" (click)="dismissError()">Dismiss</button>
+    <div class="alert alert-danger alert-dismissible" role="alert">
+      {{ message }}
+      <button type="button" class="btn-close" aria-label="Dismiss" (click)="dismissError()"></button>
     </div>
   }
 
   @if (loading()) {
-    <p class="loading">Loading…</p>
+    <mat-progress-bar mode="indeterminate" aria-label="Loading" />
   } @else {
-    <div class="layout">
-      <app-item-form [applications]="applications()" [submitting]="creating()" (created)="createItem($event)" />
-      <app-item-list [items]="items()" [updatingIds]="updatingIds()" (statusChange)="changeStatus($event)" />
+    <div class="row g-4">
+      <div class="col-lg-4">
+        <app-item-form [applications]="applications()" [submitting]="creating()" (created)="createItem($event)" />
+      </div>
+      <div class="col-lg-8">
+        <app-item-list [items]="items()" [updatingIds]="updatingIds()" (statusChange)="changeStatus($event)" />
+      </div>
     </div>
   }
 </main>

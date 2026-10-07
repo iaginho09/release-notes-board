@@ -5,7 +5,7 @@ A small application to manage release notes: list entries, create new entries fo
 | Layer    | Technology                                                    |
 |----------|---------------------------------------------------------------|
 | Backend  | Java 21, Spring Boot 3.5, Spring Data JPA, Flyway, Maven      |
-| Frontend | Angular 22 (standalone components, signals), Vitest, ESLint   |
+| Frontend | Angular 22 (standalone components, signals), Angular Material, Bootstrap 5, Vitest, ESLint |
 | Database | PostgreSQL 16 (Docker Compose)                                |
 
 ## Prerequisites
@@ -130,6 +130,7 @@ Frontend tests cover the API client, the error mapping, the form validation and 
 **Frontend.**
 
 - One container component (`App`) owns the state (Angular signals) and talks to the API. `ItemForm` and `ItemList` are presentational (inputs/outputs only) and use `OnPush` change detection, which keeps them simple to test and reuse.
+- Styling is kept simple: **Bootstrap** (CSS only, no JavaScript) for layout, cards, table, alerts and utility classes, and **Angular Material** for the form controls (form fields, selects, buttons) and the loading bar. There is almost no custom CSS.
 - The API client uses relative `/api` URLs. In development the Angular dev server proxies them to the backend; in production the same build can be served behind a reverse proxy, with no environment-specific rebuild.
 - The status selector keeps showing the persisted status until the server confirms the change, instead of updating optimistically, so the UI never shows a state that failed to save.
 - **ESLint is also the formatter** (`@stylistic/eslint-plugin`, no Prettier), so there is a single tool and a single command for code style. Stricter rules are enabled: explicit return types, no `any`, `OnPush` required, built-in control flow and template accessibility checks.

@@ -1,11 +1,17 @@
+import { HarnessLoader } from '@angular/cdk/testing';
+import { TestbedHarnessEnvironment } from '@angular/cdk/testing/testbed';
 import { ComponentFixture, TestBed } from '@angular/core/testing';
+import { MatButtonHarness } from '@angular/material/button/testing';
+import { MatFormFieldHarness } from '@angular/material/form-field/testing';
+import { MatInputHarness } from '@angular/material/input/testing';
+import { MatSelectHarness } from '@angular/material/select/testing';
 
 import { CreateItemRequest } from '../../models/release-notes.model';
 import { ItemForm } from './item-form';
 
 describe('ItemForm', () => {
   let fixture: ComponentFixture<ItemForm>;
-  let element: HTMLElement;
+  let loader: HarnessLoader;
   let emitted: CreateItemRequest[];
 
   beforeEach(async () => {
@@ -14,40 +20,46 @@ describe('ItemForm', () => {
     fixture.componentRef.setInput('applications', [{ id: 1, name: 'Customer Portal' }]);
     emitted = [];
     fixture.componentInstance.created.subscribe((request) => emitted.push(request));
-    await fixture.whenStable();
-    element = fixture.nativeElement as HTMLElement;
+    loader = TestbedHarnessEnvironment.loader(fixture);
   });
 
-  function setValue(selector: string, value: string): void {
-    const field = element.querySelector<HTMLInputElement | HTMLSelectElement>(selector)!;
-    field.value = value;
-    field.dispatchEvent(new Event(field instanceof HTMLSelectElement ? 'change' : 'input'));
+  async function selectApplication(name: string): Promise<void> {
+    const select = await loader.getHarness(MatSelectHarness);
+    await select.open();
+    await select.clickOptions({ text: name });
+  }
+
+  async function setTitle(value: string): Promise<void> {
+    const title = await loader.getHarness(MatInputHarness.with({ selector: '[formControlName="title"]' }));
+    await title.setValue(value);
   }
 
   async function submit(): Promise<void> {
-    element.querySelector('form')!.dispatchEvent(new Event('submit'));
-    await fixture.whenStable();
+    const button = await loader.getHarness(MatButtonHarness.with({ text: 'Create entry' }));
+    await button.click();
   }
 
   it('should not emit and should show errors when required fields are missing', async () => {
     await submit();
 
     expect(emitted).toEqual([]);
-    expect(element.textContent).toContain('Please select an application.');
-    expect(element.textContent).toContain('Title is required');
+    const errors = await Promise.all(
+      (await loader.getAllHarnesses(MatFormFieldHarness)).map((field) => field.getTextErrors()),
+    );
+    expect(errors.flat()).toEqual(['Please select an application.', 'Title is required (max. 200 characters).']);
   });
 
   it('should reject a whitespace-only title', async () => {
-    setValue('#applicationId', element.querySelectorAll('option')[1].value);
-    setValue('#title', '   ');
+    await selectApplication('Customer Portal');
+    await setTitle('   ');
     await submit();
 
     expect(emitted).toEqual([]);
   });
 
   it('should emit a trimmed request without empty optional fields', async () => {
-    setValue('#applicationId', element.querySelectorAll('option')[1].value);
-    setValue('#title', '  New login page  ');
+    await selectApplication('Customer Portal');
+    await setTitle('  New login page  ');
     await submit();
 
     expect(emitted).toEqual([{ applicationId: 1, title: 'New login page', version: undefined, description: undefined }]);

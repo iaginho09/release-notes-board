@@ -1,5 +1,9 @@
-import { ChangeDetectionStrategy, Component, inject, input, output } from '@angular/core';
-import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
+import { ChangeDetectionStrategy, Component, inject, input, output, viewChild } from '@angular/core';
+import { FormBuilder, FormGroupDirective, ReactiveFormsModule, Validators } from '@angular/forms';
+import { MatButtonModule } from '@angular/material/button';
+import { MatFormFieldModule } from '@angular/material/form-field';
+import { MatInputModule } from '@angular/material/input';
+import { MatSelectModule } from '@angular/material/select';
 
 import { Application, CreateItemRequest } from '../../models/release-notes.model';
 
@@ -7,9 +11,8 @@ const NOT_BLANK = /\S/;
 
 @Component({
   selector: 'app-item-form',
-  imports: [ReactiveFormsModule],
+  imports: [ReactiveFormsModule, MatButtonModule, MatFormFieldModule, MatInputModule, MatSelectModule],
   templateUrl: './item-form.html',
-  styleUrl: './item-form.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class ItemForm {
@@ -18,6 +21,7 @@ export class ItemForm {
   readonly created = output<CreateItemRequest>();
 
   private readonly fb = inject(FormBuilder);
+  private readonly formDirective = viewChild.required(FormGroupDirective);
 
   protected readonly form = this.fb.group({
     applicationId: this.fb.control<number | null>(null, Validators.required),
@@ -43,11 +47,7 @@ export class ItemForm {
 
   /** Called by the parent once the item has been saved. */
   reset(): void {
-    this.form.reset();
-  }
-
-  protected hasError(controlName: keyof typeof this.form.controls): boolean {
-    const control = this.form.controls[controlName];
-    return control.invalid && control.touched;
+    // Resetting through the directive also clears the "submitted" state, so no errors show on the empty form.
+    this.formDirective().resetForm();
   }
 }

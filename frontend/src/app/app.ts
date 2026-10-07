@@ -1,4 +1,5 @@
 import { ChangeDetectionStrategy, Component, inject, OnInit, signal, viewChild } from '@angular/core';
+import { MatProgressBarModule } from '@angular/material/progress-bar';
 import { finalize, forkJoin } from 'rxjs';
 
 import { ItemForm } from './components/item-form/item-form';
@@ -9,9 +10,8 @@ import { ReleaseNotesApi } from './services/release-notes-api';
 
 @Component({
   selector: 'app-root',
-  imports: [ItemForm, ItemList],
+  imports: [ItemForm, ItemList, MatProgressBarModule],
   templateUrl: './app.html',
-  styleUrl: './app.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class App implements OnInit {
